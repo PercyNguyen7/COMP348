@@ -11,9 +11,11 @@
 #define SIZE 5
 #define PRODUCT(x,y) (x)*(y)
 
-
+void printAge(int *age){
+  printf("Age is %d\n", *age);
+}
 int main(){
-    sayHi(5);
+    // sayHi(5);
     //********************MACROS*********************************
     // int i;
     // int arr [SIZE];
@@ -46,13 +48,29 @@ int main(){
     // long long int l = 9223372036854775807; // 8 bytes (-9 quintillion to 9 quintillion) %lld
     // unsigned long long int m = 18446744073709551615; // 8 bytes (0 to 18 quintillion) %llu
 
-    int age;
-    age = 24;   // 4 bytes, %d, (0 to 65 535) 
-    float gpa = 3.65;   // 4 bytes, %f, 6-7 digits
-    double gpaD = 3.65324195921; // 8 bytes, %lf, 15-16 digits
-    char grade ='A';    // 1 byte, %c
-    char name[] = "Percival"; // 8 bytes, %s
-    printf("Name's %s, I am %d years old. My gpa is %.2f with the letter grade %c\n",name, age, gpa, grade);
+    // int age;
+    // age = 24;   // 4 bytes, %d, (0 to 65 535) 
+    // float gpa = 3.65;   // 4 bytes, %f, 6-7 digits
+    // double gpaD = 3.65324195921; // 8 bytes, %lf, 15-16 digits
+    // char grade ='A';    // 1 byte, %c
+    // char name[] = "Percival"; // 8 bytes, %s
+    // printf("Name's %s, I am %d years old. My gpa is %.2f with the letter grade %c\n",name, age, gpa, grade);
     
+
+    // ********POINTERS*************
+    
+    
+    int age = 21;
+    int *pAge = &age;
+    // printf("address of age: %p\n", &age);
+    // printf("value of pAge: %p\n", pAge);
+
+    // printf("size of age: %zu bytes\n", sizeof(age) );
+    // printf("size of age: %zu bytes\n", sizeof(pAge) );
+    
+    // printf("value of age: %d\n", age);
+    // printf("value at stored address: %d\n", *pAge);
+
+    printAge(pAge);
     return 0;
 }
