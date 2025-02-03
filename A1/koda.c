@@ -1,25 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-
+// #include <stdbool.h>
+#include <ctype.h>
+#include "fileread.h"
 
 int main(int argc, char *argv[]) {
-    FILE *file = fopen(argv[1], "r+");
-    // Open a file in read mode
-    // for (int i = 0; i < argc; i++) {
-    //     printf("Argument %d: %s\n", i, argv[i]);
-    // }
-    if (file == NULL){
-        perror("Error opening file");
-        return 1;
-    }
-    char ch;
-    while ( (ch = fgetc(file)) != EOF) {
-        printf("%c", ch);
-        printf("*");
-        //  putchar(ch);
-    }
-    fclose(file);
+
+    char* text = read_file();
+    printf("%s", *text);
+    // *********** scan logic
+    // char charAns;
+    // printf("Enter an integer: ");
+    // scanf("%c", &charAns);  // Reading an integer
+    // charAns = tolower(charAns);
+   
+    // printf("You entered: %c\n", charAns);
+    // return 0;
 
 
     // argc is the number of arguments, including the program name

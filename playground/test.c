@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "headers/string_util.h"
 
 // #include "string_util.c"
 
@@ -15,6 +14,9 @@ void printAge(int *age){
   printf("Age is %d\n", *age);
 }
 int main(){
+
+    sayHi();
+    h1Function(5);
     // sayHi(5);
     //********************MACROS*********************************
     // int i;
@@ -60,8 +62,8 @@ int main(){
     // ********POINTERS*************
     
     
-    int age = 21;
-    int *pAge = &age;
+    // int age = 21;
+    // int *pAge = &age;
     // printf("address of age: %p\n", &age);
     // printf("value of pAge: %p\n", pAge);
 
@@ -71,6 +73,6 @@ int main(){
     // printf("value of age: %d\n", age);
     // printf("value at stored address: %d\n", *pAge);
 
-    printAge(pAge);
+    // printAge(pAge);
     return 0;
 }
