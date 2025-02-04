@@ -1,28 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 // #include <stdbool.h>
-#include <ctype.h>
-#include "fileread.h"
+// #include "fileread.h"
 
-int main(int argc, char *argv[]) {
+int main() {
+FILE *fptr;
+// Open a file in read mode
+fptr = fopen("test.txt", "r");
 
-    char* text = read_file();
-    printf("%s", *text);
-    // *********** scan logic
-    // char charAns;
-    // printf("Enter an integer: ");
-    // scanf("%c", &charAns);  // Reading an integer
-    // charAns = tolower(charAns);
-   
-    // printf("You entered: %c\n", charAns);
-    // return 0;
+// Store the content of the file
+char myString[100];
 
+// If the file exist
+    if(fptr != NULL) {
 
-    // argc is the number of arguments, including the program name
-    // argv is an array of strings (char arrays) representing the arguments
-    // for (int i = 0; i < argc; i++) {
-    //     printf("Argument %d: %s\n", i, argv[i]);
-    // }
+    // Read the content and print it
+    while(fgets(myString, 100, fptr)) {
+        char ans[100];
+        printf("%s", myString);
+        printf("how are you doing?\n");   
+        scanf("%s",ans);    
+        printf("You entered: %s\n", ans); 
+    }
+       fclose(fptr);
+// If the file does not exist
+    } else {
+        printf("Not able to open the file.");
+    
+    }
+    
 
-    // return 0;
+    // Close the file
+//    char str[100];  // Declare a character array to store the string
+//     printf("Enter a string: ");
+//     scanf("%s", str);  // Read a string from the user
+
+//     printf("You entered: %s\n", str);  
+    return 0;
 }
