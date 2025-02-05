@@ -1,3 +1,3 @@
-this is a text file that contains ~*****s and oranges~.
-an apple a day keeps the doctor away!
-*****s or oranges? that is the question!
+This is an Apple *** **** text file that contains ~apples and Oranges~.
+An Apple a day keeps *** the doctor away!
+Apples or Oranges? That *** is the question!

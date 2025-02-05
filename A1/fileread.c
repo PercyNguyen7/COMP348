@@ -25,8 +25,21 @@ char** read_file(int* size){// Close the file
 
     if (array == NULL) return NULL; // Check allocation failure
 
-    // Read the content and print it
-    while(fgets(myString, MAX_LINE_LENGTH, fptr) != NULL) { 
+    //Read the content and print it
+    // while(fgets(myString, MAX_LINE_LENGTH, fptr) != NULL) {        
+    //     array[counter] = strdup(myString);
+    //      printf("LINE:%s",myString);
+    //     counter++;
+    // }
+     while (fgets(myString, MAX_LINE_LENGTH, fptr) != NULL) {        
+        int len = strlen(myString);
+        
+        // Check if last character is not a newline and add one
+        if (len > 0 && myString[len - 1] != '\n') {
+            myString[len] = '\n';  
+            myString[len + 1] = '\0';  
+        }
+        
         array[counter] = strdup(myString);
         counter++;
     }

@@ -5,14 +5,14 @@
 
 
 // Using the first char pointer and changing its character to lowercase
-void toLowerCase(char *word) {
+void toLowerCaseInPl(char *word) {
     while (*word) {           
         *word = tolower(*word);  
         word++;                  
     }
 }
 // second one return a dynamic string that is lower case
-char* toLowerCase2(char* word){
+char* toLowerCase(char* word){
     int len = 0;
     while (word[len] != '\0') len++;
 
@@ -25,9 +25,7 @@ char* toLowerCase2(char* word){
     return lowerCaseWord;
 }
 
-
-char *replace_word(char *orig, char *rep, char *with) {
-
+char *replace_word(char *orig, char *rep, char *with, int *wordCount) {
     char *result; // the return string
     char *ins;    // the next insert point
     char *tmp;    // varies
@@ -51,6 +49,8 @@ char *replace_word(char *orig, char *rep, char *with) {
     for (count = 0; (tmp = strstr(ins, rep)); ++count) {
         ins = tmp + len_rep;
     }
+    // IF wordCount isnt null, add it up!
+    if( wordCount != NULL) *wordCount+= count;
     // Make space for tmp and result
     tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
     if (!result)
@@ -61,6 +61,7 @@ char *replace_word(char *orig, char *rep, char *with) {
     //    tmp points to the end of the result string
     //    ins points to the next occurrence of rep in orig
     //    orig points to the remainder of orig after "end of rep"
+    
     while (count--) {
         ins = strstr(orig, rep);
         len_front = ins - orig;

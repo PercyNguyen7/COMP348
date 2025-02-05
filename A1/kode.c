@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     int size;
     char** array = read_file(&size);    // this is the pointer to pointer of character i.e array
     
-    removeIgnCase(array,size);
+    removeWordCaseSens(array,size);
     // if (array) {
     //     for (int i = 0; i < size; i++) {
     //         printf("%s", array[i]);
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     //     }
     //     free(array); // Free array of pointers
     // }
-    write_file(array, size);
+    // write_file(array, size);
     return 0;
 }
 
