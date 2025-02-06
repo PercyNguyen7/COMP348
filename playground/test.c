@@ -13,10 +13,16 @@
 void printAge(int *age){
   printf("Age is %d\n", *age);
 }
+char* giveString(){
+  char sum[] = "hey";
+  return sum ;
+}
 int main(){
+    char* five = giveFive();
+    printf("%s",*five);
 
-    sayHi();
-    h1Function(5);
+    // sayHi();
+    // h1Function(5);
     // sayHi(5);
     //********************MACROS*********************************
     // int i;
