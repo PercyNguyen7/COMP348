@@ -10,16 +10,16 @@
 int assignMode(char* command ){
     // strcpy(command,argv[1]);
     if( strcmp(command,"RC") ==0) {
-        printf("Remove Case Sensitive process begun\n\n");
+        printf("Remove Case Sensitive process begun\n");
         return 1;
     } else  if( strcmp(command,"RI") ==0) {
-        printf("Remove Ignore Case process begun\n\n");
+        printf("Remove Ignore Case process begun\n");
         return 2;
     } else if( strcmp(command,"UK") ==0) {
-        printf("Un-remove Keep Case process begun\n\n");
+        printf("Un-remove Keep Case process begun\n");
         return 3;
     } else if( strcmp(command,"UM") ==0) {
-        printf("Un-remove Match Case process begun\n\n");
+        printf("Un-remove Match Case process begun\n");
         return 4;
     } else{
         printf("That is not a valid command");
@@ -33,25 +33,10 @@ int assignMode(char* command ){
     // No matches - 2
     // Changes made - return 0
 int main(int argc, char *argv[]) {
-    char* fileName = argv[3];
-    char* word = argv[2];
+
     // Read the command
     int mode= assignMode(argv[1]);
-    switch (mode) {
-        case 1:
-        // readFileLines(argv[3]);
-        // printf("%s",read_line(argv[3],0));
-            removeWordCaseSens(word,fileName);
-            break;
-        case 2:
-            removeWordCaseInsens(word,fileName);
-            break;
-        case 3:
-            decode_word(word,fileName);
-            break;
-
-    } 
-    return 0;
+    if(mode == 0) return 0;
     
     // Close the file
 //    char str[100];  // Declare a character array to store the string
@@ -61,10 +46,10 @@ int main(int argc, char *argv[]) {
 //     printf("You entered: %s\n", str);  
 
 
-    // int arrSize;
-   
-    // char** array = read_file(&arrSize, argv[3]);    // this is the pointer to pointer of character i.e array 
-
+    int arrSize;
+    char** array = read_file(&arrSize, argv[3]);    // this is the pointer to pointer of character i.e array
+    
+    removeWordCaseSens(array,arrSize,argv[2]);
     // if (array) {
     //     for (int i = 0; i < arrSize; i++) {
     //         printf("%s", array[i]);
