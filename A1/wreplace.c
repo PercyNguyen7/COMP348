@@ -45,6 +45,18 @@ char* toLowerCase(char* word){
     lowerCaseWord[len] = '\0';
     return lowerCaseWord;
 }
+char* toUpperCase(char* word){
+  int len = 0;
+  while (word[len] != '\0') len++;
+
+  char* upperCaseWord = (char*)malloc(len);
+
+  for (int i = 0; i < len; i++) {
+      upperCaseWord[i] = toupper(word[i]); // Convert each char
+  }
+  upperCaseWord[len] = '\0';
+  return upperCaseWord;
+}
 // Loop over word, compare if str2 is a substring of str1
 bool is_encoded_substring(const char* str1, const char* str2) {
     const char* temp = str1;
@@ -53,7 +65,7 @@ bool is_encoded_substring(const char* str1, const char* str2) {
     while (*temp) {
         // Check if the substring from current position matches str2
         if (strncmp(temp, str2, len2) == 0) {
-            // Ensure that the match is a whole word
+            // Ensure # of * is exact, no more no less
             if ((temp == str1 || *(temp - 1) != '*' ) && *(temp+len2) !='*' ) {
                 return true;
             }
@@ -227,8 +239,8 @@ char *decode_word_keep_case(char *before, char *word,  int *swapCount){
   while (i < strlen(before)) {
 
     if (strstr(&before[i], censoredWord) == &before[i] && before[i-1] != '*' && before[i+ wordLen] != '*') {
-        // printf("it worked at index %d\n", i);
-      // we now copy into the after string AT INDEX J the new substring
+      
+
       strcpy(&after[j], word);
       i += wordLen;
       j += wordLen;
@@ -243,7 +255,70 @@ char *decode_word_keep_case(char *before, char *word,  int *swapCount){
   }
    // put a null terminator at the end of the after string
    after[j] = '\0';
+   free(censoredWord);
    
+   // return a pointer to the after string
+   return after;
+ }
+
+ char *decode_word_match_case(char *before, char *word,  int *swapCount){
+  // get the lengths of the before string, old substring and new substring
+
+  int wordLen = strlen(word);
+ char* censoredWord = censorWord(word);
+  int before_length = strlen(before);
+  
+  // stores pointer to the dynamically allocated after string
+  char *after;
+
+  after = malloc((before_length + 1) * sizeof(char));
+  int i = 0;
+  int j = 0;
+  
+  while (i < strlen(before)) {
+    int currInd = i;
+    int prevInd = i-1;
+    int afterInd = i+wordLen;
+
+    if (strstr(&before[i], censoredWord) == &before[i] && before[i-1] != '*' && before[i+ wordLen] != '*') {
+        // printf("it worked at index %d\n", i);
+      // we now copy into the after string AT INDEX J the new substring
+
+      // element before is [0,stringLen-1]
+      //element after is [1,stringlen]
+      
+      if(prevInd >= 0 &&  prevInd <= (before_length -2 ) && isalpha(before[prevInd])){
+        // if before is a number
+        // if before is a letter
+        
+        if(isupper(before[prevInd]) ){
+          strcpy(&after[j], toUpperCase(word));
+        }else{
+          strcpy(&after[j], toLowerCase(word));
+        }
+      } else if(afterInd >= 1 && (afterInd <=before_length-1 ) && isalpha(before[afterInd]) ){
+        if(isupper(before[i+wordLen]) ){
+          strcpy(&after[j], toUpperCase(word));
+        }else{
+          strcpy(&after[j], toLowerCase(word));
+        } 
+      } else{
+        strcpy(&after[j], word);
+      }
+      i += wordLen;
+      j += wordLen;
+
+      if(swapCount != NULL) *swapCount +=1;
+    }
+    else {
+      after[j] = before[i];
+      i++;
+      j++;
+    }
+  }
+   // put a null terminator at the end of the after string
+   after[j] = '\0';
+   free(censoredWord);
    // return a pointer to the after string
    return after;
  }

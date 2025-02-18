@@ -10,16 +10,16 @@
 int assignMode(char* command ){
     // strcpy(command,argv[1]);
     if( strcmp(command,"RC") ==0) {
-        printf("Remove Case Sensitive process begun\n\n");
+        
         return 1;
     } else  if( strcmp(command,"RI") ==0) {
-        printf("Remove Ignore Case process begun\n\n");
+        
         return 2;
     } else if( strcmp(command,"UK") ==0) {
-        printf("Un-remove Keep Case process begun\n\n");
+        
         return 3;
     } else if( strcmp(command,"UM") ==0) {
-        printf("Un-remove Match Case process begun\n\n");
+   
         return 4;
     } else{
         printf("That is not a valid command");
@@ -48,6 +48,9 @@ int main(int argc, char *argv[]) {
             break;
         case 3:
             decode_word(word,fileName);
+            break;
+        case 4:
+            decode_word_special(word,fileName);
             break;
 
     } 

@@ -1,5 +1,3 @@
-This is a text file that contains ~Apples and Oranges~.
-An Apples a day keeps the doctor away Apple!
-Apples or Oranges? That is the question!
-Apple and my Apple, yeehaw
-Applee makes me angry!!!!*****
+This is a text file that contains ~apples and Oranges~.
+An aPPle a day keeps the doctor away!
+apples or Oranges? That is the question!

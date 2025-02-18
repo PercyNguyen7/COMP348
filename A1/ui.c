@@ -36,7 +36,9 @@ int confirmRes(int needConfirmation){
 }
 
 //function 
-void removeWordCaseSens( char* word, char* fileName){
+int removeWordCaseSens( char* word, char* fileName){
+    bool matchFound = false;
+    int messageOnce = false;
     int needConfirmation = 1;
     //  int wordLen = strlen(word);
     int wordSwapCount = 0;
@@ -46,7 +48,7 @@ void removeWordCaseSens( char* word, char* fileName){
     char* censoredWord = censorWord(word);
     int res;
 
-    // printf("%s",censoredWord);
+    printf("Remove Case Sensitive process begun\n\n");
     char* currStr;
     // Looping through each line from given array
     while ((currStr = read_line(fileName, currLine)) != NULL) {
@@ -73,7 +75,10 @@ void removeWordCaseSens( char* word, char* fileName){
                 // No
                 case 3:
                 // Change all
+                if(!messageOnce){
                     printf("All remaining word(s) %s have been redacted.\n\n", word);
+                    messageOnce = true;
+                }   
                     newStr = replace_word(currStr,word,censoredWord, ptWordSwapCount);                  
                     // currStr = newStr;
                     needConfirmation = 0;
@@ -93,9 +98,12 @@ void removeWordCaseSens( char* word, char* fileName){
         currLine++;
         free(currStr);
     }
-    printf("The program terminated and changed %d word(s) in %d line(s)\n", wordSwapCount,totalLineChanged);
+    matchFound ? printf("The program terminated and changed %d word(s) in %d line(s)\nReturning code 0.\n", wordSwapCount,totalLineChanged): printf("No match found, returning code 2.");
+    return matchFound? 0 : 2;
 }
-void removeWordCaseInsens( char* word, char* fileName){
+int removeWordCaseInsens( char* word, char* fileName){
+    bool matchFound = false;
+    bool messageOnce = false;
     int needConfirmation = 1;
     //  int wordLen = strlen(word);
     int wordSwapCount = 0;
@@ -105,7 +113,7 @@ void removeWordCaseInsens( char* word, char* fileName){
     char* censoredWord = censorWord(word);
 
     int res;
-
+    printf("Remove Ignore Case process begun\n\n");
     // printf("%s",censoredWord);
     char* currStr;
     // Looping through each line from given array
@@ -132,7 +140,10 @@ void removeWordCaseInsens( char* word, char* fileName){
                 // No
                 case 3:
                 // Change all
+                if(!messageOnce){
                     printf("All remaining word(s) %s have been redacted.\n\n", word);
+                    messageOnce = true;
+                }   
                     newStr = replace_word_ignorecase(currStr,word,censoredWord, ptWordSwapCount);                  
                     // currStr = newStr;
                     needConfirmation = 0;
@@ -152,9 +163,12 @@ void removeWordCaseInsens( char* word, char* fileName){
         currLine++;
         free(currStr);
     }
-    printf("The program terminated and changed %d word(s) in %d line(s)\n", wordSwapCount,totalLineChanged);
+    matchFound ? printf("The program terminated and changed %d word(s) in %d line(s)\nReturning code 0.\n", wordSwapCount,totalLineChanged): printf("No match found, returning code 2.");
+    return matchFound? 0 : 2;
 }
-void decode_word(char* word, char* fileName){
+int decode_word(char* word, char* fileName){
+    bool matchFound = false;
+    bool messageOnce = false;
     int needConfirmation = 1;
     //  int wordLen = strlen(word);
     int wordSwapCount = 0;
@@ -165,7 +179,7 @@ void decode_word(char* word, char* fileName){
 
     int res;
 
-    // printf("%s",censoredWord);
+    printf("Un-remove Keep Case process begun\n\n");
     char* currStr;
     // Looping through each line from given array
     while ((currStr = read_line(fileName, currLine)) != NULL) {
@@ -192,8 +206,76 @@ void decode_word(char* word, char* fileName){
                 case 3:
                 // Change all
                 write_line(fileName,currLine,newStr);
+                if(!messageOnce){
                     printf("All remaining word(s) %s have been decoded.\n\n", word);
+                    messageOnce = true;
+                }   
                     newStr = decode_word_keep_case(currStr,word, ptWordSwapCount);                  
+                    needConfirmation = 0;
+                    totalLineChanged++;
+                    break;
+                case 4:
+                // Quit - Print out the rest
+                    needConfirmation = -1;
+                    printf("Quitting without any further decoding.\n\n");
+                    break;
+            }
+            if (res ==4) break;
+        } else {
+            printf("No change needed on line #%d!\n\n", currLine);   
+        }
+        currLine++;
+        free(currStr);
+    }
+    free(censoredWord);
+    matchFound ? printf("The program terminated and changed %d word(s) in %d line(s)\nReturning code 0.\n", wordSwapCount,totalLineChanged): printf("No match found, returning code 2.");
+    return matchFound? 0 : 2;
+}
+int decode_word_special(char* word, char* fileName){
+    bool matchFound = false;
+    bool messageOnce = false;
+   
+    int needConfirmation = 1;
+    int wordSwapCount = 0;
+    int currLine = 0;
+    int totalLineChanged = 0;
+    int *ptWordSwapCount = &wordSwapCount;
+    char* censoredWord = censorWord(word);
+
+    int res;
+
+    printf("Un-remove Match Case process begun\n\n");
+    char* currStr;
+    // Looping through each line from given array
+    while ((currStr = read_line(fileName, currLine)) != NULL) {
+        char* newStr = decode_word_match_case(currStr,word,NULL);
+        // IF censoredWord is not a matched
+        if (is_encoded_substring(currStr, censoredWord) ) {
+            if (needConfirmation == 1){
+                printf("Changing line %d from\n%sto\n%sConfirm (Yes, No, All, Quit)? _\n", currLine, currStr, newStr);
+            }
+            res = confirmRes(needConfirmation);
+            
+            switch (res){
+                case 1:
+                // Yes
+                    newStr = decode_word_match_case(currStr,word, ptWordSwapCount);
+                    printf("The word(s) %s on line %d were decoded.\n\n",word,currLine);
+                    totalLineChanged++;
+                    write_line(fileName,currLine,newStr);
+                    break; 
+                case 2:
+                     printf("No change was made.\n\n");
+                    break;
+                // No
+                case 3:
+                // Change all
+                write_line(fileName,currLine,newStr);
+                if(!messageOnce){
+                    printf("All remaining word(s) %s have been decoded.\n\n", word);
+                    messageOnce = true;
+                }   
+                    newStr = decode_word_match_case(currStr,word, ptWordSwapCount);                  
                     
                     needConfirmation = 0;
                     totalLineChanged++;
@@ -211,5 +293,7 @@ void decode_word(char* word, char* fileName){
         currLine++;
         free(currStr);
     }
-    printf("The program terminated and changed %d word(s) in %d line(s)\n", wordSwapCount,totalLineChanged);
+    free(censoredWord);
+    matchFound ? printf("The program terminated and changed %d word(s) in %d line(s)\nReturning code 0.\n", wordSwapCount,totalLineChanged) : printf("No match found, returning code 2.");
+    return matchFound? 0 : 2;
 }
