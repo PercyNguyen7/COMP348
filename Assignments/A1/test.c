@@ -6,7 +6,19 @@ char *replace(char *before, char *oldsub, char *newsub);
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#define MAX_LENGTH 100
 
+char* toLowerCase(char* word) {
+    static char lowerCaseWord[MAX_LENGTH];
+    int i = 0;
+    
+    while (word[i] != '\0' && i < MAX_LENGTH - 1) {
+        lowerCaseWord[i] = tolower(word[i]);
+        i++;
+    }
+    lowerCaseWord[i] = '\0';  // Null-terminate the string
+    return lowerCaseWord;
+}
 int isNotAlphaNumeric(char c) {
     return !isalnum(c);  // Non-alphanumeric characters are considered word boundaries
 }
@@ -52,18 +64,22 @@ int main()
 
 //   char *res = strstr(string1,string2);
 //   printf("%s",res);
-  char string[] = "Hate the Tea cher, love the tea set";
+  // char string[] = "Hate the Tea cher, love the tea set";
   
-  // try to replace the with that
-  char *result = replace(string, "tea", "***");
+  // // try to replace the with that
+  // char *result = replace(string, "tea", "***");
   
-  // output the before and after strings
-  printf("before: %s\n", string);
-  printf("after: %s\n", result);
+  // // output the before and after strings
+  // printf("before: %s\n", string);
+  // printf("after: %s\n", result);
   
-  // free the memory allocated for the after string
-  free(result);
+  // // free the memory allocated for the after string
+  // free(result);
   
+  char* word = "YEEHAW I don't know whjat to do!";
+  char* lower_word = toLowerCase( word);
+
+  printf("%s\n && %s\n",word, lower_word);
   return 0;
 }
 
