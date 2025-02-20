@@ -34,7 +34,6 @@ char* read_line(char* file_name, int targetLine){// Close the file
                 break;
             } 
         }
-        // printf("\ncurr %d and %d target\n",currLine, targetLine);
         // If targetLine doesn't exist, then I return null
         if(currLine != targetLine)return NULL;
       
@@ -45,7 +44,8 @@ char* read_line(char* file_name, int targetLine){// Close the file
        return str;
 // If the file does not exist
     } else {
-        perror("Error opening file!");
+        perror("Error opening file: ");
+        printf("Exiting program with code 3.\n");
         exit(3);
     }
     return NULL;
