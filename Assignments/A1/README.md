@@ -21,14 +21,18 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a> -->
 
-# Redact and Replacing Text Editor
-A fun-size project used to redact and replace words in any given text file!
+# Redact and Replacing Word Text Editor
+A fun-size project used to redact and replace words in a given text file! 
+The user has the option to make changes line by line, including make all possible changes, or no further changes to the programming at any given time.
 
 <!-- USAGE EXAMPLES -->
-## Usage
-Given any text file, the software can perform the following:
+## Functionality
+Given any text file, the software reads each line and asks the user if they'd like to edit it 
+![image](https://github.com/user-attachments/assets/e1b66903-c4b0-405e-8e54-89bf2d688644)
 
-### 1. Redact a word, keep case (RC)
+The software's current commands are as followed:
+
+### 1. Redact a word, case considered (RC)
 Censoring the specific word by substituting all its instances with a series of asterisks matching the word's length.
 
 > Redacting the word `War` in the string:
@@ -42,9 +46,9 @@ Censoring the specific word by substituting all its instances with a series of a
 > ```text
 > ***, war never changes.
 > ```
-> Notice the second `war` in the string wasn't changed because we only changed all instances of `War`
+> Notice the second `war` in the string wasn't changed because it has different casing than `War`.
 
-### 2. Redact a word, case ignored
+### 2. Redact a word, case ignored (RI)
 Redacting the word and all of its lowercase equivalents by replacing each occurence with consecutive asterisks of the same length as the word.    
 
 > Redacting the word `war` in the string:
@@ -61,7 +65,7 @@ Redacting the word and all of its lowercase equivalents by replacing each occure
 > Notice `War` was also changed, as we ignored case.
 
 
-### 3. Unmask a word , case ignored
+### 3. Unmask a word , same case (UK)
 Unmasking all censored words of same length with the exact word input.    
   
 > Unmasking the word `War` in the string:
@@ -75,28 +79,56 @@ Unmasking all censored words of same length with the exact word input.
 > ```text
 > War, War never *******.
 > ```
-> Notice the first `*******` was not changed, because its length is 7 while War only has a length of 3.
+> Notice `*******` was unchanged, because it has 7 letters while `War` has 3.
 
-### 4. Unmask a word , special case
+### 4. Unmask a word , special case (UM)
 
 Unmasking all censored words of same length with the same word input. However the casing of the replaced word depends on the letter before, the letter after, or the same casing as the word input.
 
-Ex 1: Same casing as letter before: 
-Unmasking the word `ar` in string    
-`W**, w** never changes.` will result in `WAR, war never changes.`
-The first ** turned to `AR`, because the letter before it, `W`, is uppercase. Hence `AR` is also uppercase.
-The second ** turned to `ar`, because the letter before it, `w`, is lower. Hence `ar` is also lowercase.
+Ex 1: Match case with letter before: 
+> Unmasking the word `ar` in string
+>
+> ```text
+> `W**, w** never changes.` 
+> ```
+>
+> will result in:
+>
+> ```text
+> `WAR, war never changes.`
+> ```
+> The first `**` turned to `AR`, because the letter before it, `W`, is uppercase. Hence `AR` is also uppercase.  
+> The second `**` turned to `ar`, because the letter before it, `w`, is lower. Hence `ar` is also lowercase.
 
-Ex 2: Same casing as letter after:
-Unmasking the word `ar` in string    
-`W**, w** never changes.` will result in `WAR, war never changes.`
-The first ** turned to `AR`, because the letter before it, `W`, is uppercase. Hence `AR` is also uppercase.
-The second ** turned to `ar`, because the letter before it, `w`, is lower. Hence `ar` is also lowercase.
+Ex 2: No letter before, match case with letter after:
+> Unmasking the word `Wa` in string
+>
+> ```text
+> `**R, **r never changes.`
+> ```
+>
+> will result in:
+>
+> ```text
+> `WAR, war never changes.`
+> ```
+> The first `**` turned to `WA`, because the letter after it, `R`, is uppercase. Hence `WA` is also uppercase.
+> The second `**` turned to `wa`, because the letter before it, `r`, is lower. Hence `wa` is also lowercase.
   
-EX 3: No letter before or after:   
-Unmasking the word `War` in string    
-`***, *** never changes.` will result in `War, war never changes.`
-The first *** turned to War, because there is no letter before and after it. Hence it copied the same 
+EX 3: No letter before or after, match case with word input   
+> Unmasking the word `WaR` in string   
+>
+> ```text
+> `***, *** never changes.`
+> ```
+>
+> will result in:
+>
+> ```text
+> `WaR, WaR never changes.`
+> ```
+> Both `***` turned to `WaR`, because there is no letter before it or after it. Hence `WaR` has the same case as the input `WaR`.
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -137,25 +169,48 @@ To get a local copy up and running follow these simple example steps.
 ### Prerequisites
 This project requires to be run on a Linux machine, or run on Ubuntu
 
-This is an example of how to list things you need to use the software and how to install them.
-
-
 ### Installation
-You may test out the code by:
-1. Download the code from this specific project via the following online tool https://download-directory.github.io/ 
+You may test out the code by either
+1. Download the repo's directory via https://download-directory.github.io/ 
    
-2. Clone the repo
+2. Clone the repo with
    ```sh
    git clone https://github.com/PercyNguyen7/COMP348/Assignments/A1.git
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Usage
+
+### Compilation
+Once downloaded, compile it and run the following code in your terminal
+```sh
+  gcc -o kode -Wall kode.c fileread.c wreplace.c ui.c 
+   ```
 
 
 
+### Running Project
+You can run the project with the following command and parameters
+`./kode <command> <word> <file>`
 
+| Parameters | Description |
+| ------------- | ------------- |
+| command| Either RC, RI, UK or UM |
+| word | The word you want to redact/unmask in the text file |
+| file | The file name |
 
+| Command  | Description |
+| ------------- | ------------- |
+| RC | Redact Case Sensitive |
+| RI | Redact Case Ignored |
+| UK | Unmask Keep Case |
+| UM | Unmask Special Case |
+
+If you have Valgrind installed, you may also check for memory leak via the following line before running the program:
+```sh
+    valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./kode <command> <word> <file>
+```
 <!-- ROADMAP -->
 <!-- ## Roadmap
 
