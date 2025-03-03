@@ -9,51 +9,52 @@
 
 #define MAX_LINE_LENGTH 4096
 
-// read_line returns the curr. string or NULL if target line cannot be found (targetline > number of lines in txt file)
-char* read_line(char* file_name, int targetLine){// Close the file
+// read_line returns the curr. string or NULL if target line cannot be found (target_line > number of lines in txt file)
+char* read_line(char* file_name, int target_line){// Close the file
     FILE *fptr;
     // Open a file in read mode
     fptr = fopen(file_name, "r");
    
-    int currLine= -1;
+    int curr_line= -1;
     // Store the content of the file
     char buffer[MAX_LINE_LENGTH];
-    int strLength = 0;
+    int str_len = 0;
     // If the file exist
     if(fptr != NULL) {
         while (fgets(buffer, sizeof(buffer), fptr) != NULL) {
             // printf("%s\n", buffer);    
-            currLine++;    
-            if (currLine == targetLine) {
-                strLength = strlen(buffer); // Use strLength instead of sizeof
+            curr_line++;    
+            if (curr_line == target_line) {
+                str_len = strlen(buffer); // Use str_len instead of sizeof
                 // If the last character isn't '\n', add it
-                if (strLength > 0 && buffer[strLength - 1] != '\n') {
-                    buffer[strLength] = '\n';
-                    buffer[strLength + 1] = '\0';  // Null-terminate the string
+                if (str_len > 0 && buffer[str_len - 1] != '\n') {
+                    buffer[str_len] = '\n';
+                    buffer[str_len + 1] = '\0';  // Null-terminate the string
                 }
                 break;
             } 
         }
-        // printf("\ncurr %d and %d target\n",currLine, targetLine);
-        // If targetLine doesn't exist, then I return null
-        if(currLine != targetLine)return NULL;
-      
-        char *str = (char *)malloc(strLength* sizeof(char) +1); 
-        strcpy(str,buffer);
+        // If target_line doesn't exist, then I return null
+        if(curr_line != target_line){
+            fclose(fptr);
+            return NULL;
+        }
 
+        char *str = (char *)malloc(str_len* sizeof(char) +1); 
+        strcpy(str,buffer);
        fclose(fptr);
        return str;
 // If the file does not exist
     } else {
-        perror("Error opening file!");
+        perror("Error opening file: ");
+        printf("Exiting program with code 3.\n");
         exit(3);
     }
-    return NULL;
 }
 //function takes in a line and the line number, then write that string on the specified line of the file
 void write_line(char *file_name, int target_line, char* new_text) {
-    FILE *file = fopen(file_name, "r+"); // Open the file for both reading and writing
-    if (file == NULL) {
+    FILE *fptr = fopen(file_name, "r+"); // Open the file for both reading and writing
+    if (fptr == NULL) {
         printf("Could not open file for reading and writing.\n");
         return;
     }
@@ -62,15 +63,15 @@ void write_line(char *file_name, int target_line, char* new_text) {
     int curr_line = 0;
 
     // read line, then write one by one
-    while (fgets(buffer, sizeof(buffer), file)) {
+    while (fgets(buffer, sizeof(buffer), fptr)) {
         //once reached the target line
         if (curr_line == target_line) {
             // move pointer backward into the beginning of the line
-            fseek(file, -(long)strlen(buffer), SEEK_CUR); 
-            fputs(new_text, file); 
+            fseek(fptr, -(long)strlen(buffer), SEEK_CUR); 
+            fputs(new_text, fptr); 
             break; // Exit the loop after modifying the line
         }
         curr_line++;
     }
-    fclose(file);
+    fclose(fptr);
 }

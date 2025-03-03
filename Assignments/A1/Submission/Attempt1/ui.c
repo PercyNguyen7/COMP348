@@ -54,7 +54,7 @@ int start_program(int mode, char* word, char* file_name){
     
     // Looping through each line from given array
     while ((curr_str = read_line(file_name, curr_line)) != NULL) {
-        //doesnt pass in pointer because we are not tracking swap count here
+        
         char* newStr = process_string(mode,curr_str,word,NULL);
 
         // IF the word/encoded word can be replaced!
@@ -63,12 +63,11 @@ int start_program(int mode, char* word, char* file_name){
             if (confirmation == 1){
                 printf("Changing line %d from\n%sto\n%sConfirm (Yes (y), No (n), All (a), Quit (q))? _\n", curr_line, curr_str, newStr);
             }
-            
             user_response = confirm_response(confirmation);
             switch (user_response){
                  // YES
                 case 1:
-                free(newStr);
+               
                     newStr = process_string(mode,curr_str,word, pt_swap_count);
                     printf("The word(s) %s on line %d were changed.\n\n",word,curr_line);
                     total_line_changed++;
@@ -81,7 +80,6 @@ int start_program(int mode, char* word, char* file_name){
                     break;
                  // ALL
                 case 3:
-                free(newStr);
                     if(!allChosen){
                         printf("All remaining word(s) %s have been changed.\n\n", word);
                         allChosen = true;
@@ -95,7 +93,6 @@ int start_program(int mode, char* word, char* file_name){
                 case 4:
                 // Quit - Print out the rest
                     free(curr_str);
-                    free(newStr);
                     printf("Quitting without any further changes.\n\n");
                     printf("Changed %d word(s) in %d line(s). Returning code 1.\n\n", swap_count,total_line_changed);
                     return 1;
@@ -107,7 +104,6 @@ int start_program(int mode, char* word, char* file_name){
         }
         curr_line++;
         free(curr_str);
-        free(newStr);
     }
     matchFound ? printf("Changed %d word(s) in %d line(s). Returning code 0.\n\n", swap_count,total_line_changed) : printf("No match found. Returning code 2.\n\n");
     return matchFound ? 0 : 2;

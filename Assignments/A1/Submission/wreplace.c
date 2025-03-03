@@ -34,7 +34,7 @@ void to_lowercase_in_place(char *str) {
         str++;                  
     }
 }
-// second one return a dynamic string that is lower case
+// fn return a dynamic string that is lower case of given str
 char* to_lowercase(char* str){
     int len = 0;
     while (str[len] != '\0') len++;
@@ -57,14 +57,14 @@ char* to_uppercase(char* str){
   int len = 0;
   while (str[len] != '\0') len++;
 
-  char* uppercase_str = (char*)malloc(len);
+  char* uppercase_str = (char*)malloc(len+1);
   if (uppercase_str == NULL) {
     fprintf(stderr, "Memory allocation failed for string. Exiting program.\n");
     exit(3);
   }
 
   for (int i = 0; i < len; i++) {
-      uppercase_str[i] = toupper(str[i]); // convert each char to lowercase
+      uppercase_str[i] = toupper(str[i]); // convert each char to uppercase
   }
   uppercase_str[len] = '\0';
   return uppercase_str;
@@ -211,9 +211,9 @@ char *decode_word_keep_case(char *before, char *word,  int *pt_swap_count){
   int i = 0;
   
   while (i < strlen(before)) {
-    if (strstr(&before[i], censored_word) == &before[i] && before[i-1] != '*' && before[i+ word_len] != '*') {
+    
+    if (strstr(&before[i], censored_word) == &before[i] && ( (i == 0) || before[i-1] != '*') &&    before[i+ word_len] != '*'){
       
-
       strcpy(&after[i], word);
       i += word_len;
 
@@ -252,7 +252,7 @@ char *decode_word_keep_case(char *before, char *word,  int *pt_swap_count){
   while (i < strlen(before)) {
     int prevInd = i-1;
     int afterInd = i+word_len; // index right after the word on that string
-    if (strstr(&before[i], censored_word) == &before[i] && before[i-1] != '*' && before[afterInd] != '*') {
+    if (strstr(&before[i], censored_word) == &before[i] && ( (i == 0) || before[i-1] != '*') &&    before[i+ word_len] != '*') {
       // if prevInd is in bounds and the character is a letter
       if(prevInd >= 0 &&  prevInd <= (before_length -2 ) && isalpha(before[prevInd])){
         if(isupper(before[prevInd]) ){

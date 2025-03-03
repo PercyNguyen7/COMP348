@@ -1,3 +1,3 @@
-This is a text file that contains ~man01s and Oranges~.
-An mAn01 a day keeps the doctor away!
-man01s or Oranges? That is the question!
+This is a text file that contains ~*****s and Oranges~.
+An ***** a day keeps the doctor away! x
+*****s or Oranges? That is the question!

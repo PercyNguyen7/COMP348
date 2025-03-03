@@ -7,5 +7,5 @@
 #include <stdlib.h>
 #include <string.h>
 
-char* read_line(char* filename, int target_line);
-void write_line(char *filename, int target_line, char* new_text);
+int confirm_response(int need_confirmation);
+int start_program(int mode, char* word, char* file_name);
