@@ -16,26 +16,91 @@
 
 <!-- PROJECT LOGO -->
 <br />
-<div align="center">
+
 <!--   <a href="https://github.com/PercyNguyen7/COMP348/Assignments/A1">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a> -->
 
-<h3 align="center">Redact and Reveal Text Editor</h3>
+# Redact and Replacing Text Editor
+A fun-size project used to redact and replace words in any given text file!
 
-  <p align="center">
-    Assignment 1 
-    <br />
-    <a href="https://github.com/PercyNguyen7/COMP348/Assignments/A1"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/PercyNguyen7/COMP348/Assignments/A1">View Demo</a>
-    &middot;
-    <a href="https://github.com/PercyNguyen7/COMP348/Assignments/A1/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    &middot;
-    <a href="https://github.com/PercyNguyen7/COMP348/Assignments/A1/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
-  </p>
-</div>
+<!-- USAGE EXAMPLES -->
+## Usage
+Given any text file, the software can perform the following:
+
+### 1. Redact a word, keep case (RC)
+Censoring the specific word by substituting all its instances with a series of asterisks matching the word's length.
+
+> Redacting the word `War` in the string:
+> 
+> ```text
+> War, war never changes. 
+> ```
+> 
+> will result in:
+> 
+> ```text
+> ***, war never changes.
+> ```
+> Notice the second `war` in the string wasn't changed because we only changed all instances of `War`
+
+### 2. Redact a word, case ignored
+Redacting the word and all of its lowercase equivalents by replacing each occurence with consecutive asterisks of the same length as the word.    
+
+> Redacting the word `war` in the string:
+> 
+> ```text
+> War, war never changes. 
+> ```
+> 
+> will result in:
+> 
+> ```text
+> ***, *** never changes.
+> ```
+> Notice `War` was also changed, as we ignored case.
+
+
+### 3. Unmask a word , case ignored
+Unmasking all censored words of same length with the exact word input.    
+  
+> Unmasking the word `War` in the string:
+> 
+> ```text
+> ***, *** never *******. 
+> ```
+> 
+> will result in:
+> 
+> ```text
+> War, War never *******.
+> ```
+> Notice the first `*******` was not changed, because its length is 7 while War only has a length of 3.
+
+### 4. Unmask a word , special case
+
+Unmasking all censored words of same length with the same word input. However the casing of the replaced word depends on the letter before, the letter after, or the same casing as the word input.
+
+Ex 1: Same casing as letter before: 
+Unmasking the word `ar` in string    
+`W**, w** never changes.` will result in `WAR, war never changes.`
+The first ** turned to `AR`, because the letter before it, `W`, is uppercase. Hence `AR` is also uppercase.
+The second ** turned to `ar`, because the letter before it, `w`, is lower. Hence `ar` is also lowercase.
+
+Ex 2: Same casing as letter after:
+Unmasking the word `ar` in string    
+`W**, w** never changes.` will result in `WAR, war never changes.`
+The first ** turned to `AR`, because the letter before it, `W`, is uppercase. Hence `AR` is also uppercase.
+The second ** turned to `ar`, because the letter before it, `w`, is lower. Hence `ar` is also lowercase.
+  
+EX 3: No letter before or after:   
+Unmasking the word `War` in string    
+`***, *** never changes.` will result in `War, war never changes.`
+The first *** turned to War, because there is no letter before and after it. Hence it copied the same 
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
 
 <!-- ABOUT THE PROJECT -->
 <!--## About The Project
@@ -87,14 +152,7 @@ You may test out the code by:
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-<!-- USAGE EXAMPLES -->
-## Usage
 
-This project takes a text file, and 
-
-
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
