@@ -112,7 +112,7 @@ Ex 2: No letter before, match case with letter after:
 > ```text
 > `WAR, war never changes.`
 > ```
-> The first `**` turned to `WA`, because the letter after it, `R`, is uppercase. Hence `WA` is also uppercase.
+> The first `**` turned to `WA`, because the letter after it, `R`, is uppercase. Hence `WA` is also uppercase.  
 > The second `**` turned to `wa`, because the letter before it, `r`, is lower. Hence `wa` is also lowercase.
   
 EX 3: No letter before or after, match case with word input   
