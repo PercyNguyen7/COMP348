@@ -1,11 +1,8 @@
-//Vinh Tuan Dat NGUYEN
-//40180660 
-//Assignment 1
-//Prof Ali Jannatpour
 #pragma once
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+void check_file(FILE *fptr);
 
-char* read_line(char* filename, int target_line);
-void write_line(char *filename, int target_line, char* new_text);
+char* read_line(FILE *fptr);
+void write_line(FILE *fptr, char* curr_str, char* new_str);

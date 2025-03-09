@@ -1,16 +1,12 @@
-//Vinh Tuan Dat NGUYEN
-//40180660 
-//Assignment 1
-//Prof Ali Jannatpour
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#pragma once
+#include <stdbool.h>
+#include "state.h"
+// #include "fileread.h"
+// #include "wreplace.h"
+// #include "ui.h"
 
-#include "fileread.h"
-#include "wreplace.h"
-#include "ui.h"
+// void switch()
+enum MODES assign_mode(char* command);
+void verify_all_input(char* command, char* word, char* file_name, char* extra);
 
-int verifyMode(char* command);
-int verifyWord(char* word);
-
-
+int start_program(enum MODES mode, char* word, char* file_name);

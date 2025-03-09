@@ -1,8 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <string.h> 
+#include <ctype.h> // for character type
 #include <stdbool.h>
+
+#include "wreplace.h"
+
+// void changeCount(struct State *ptr_state){
+//   ptr_state->swap_count++;
+// }
 
 //function return the encoded version of the word by matching the # of * with the word's length
 char* censorWord(char* word){
@@ -11,7 +17,7 @@ char* censorWord(char* word){
    char *censored_word = (char *)malloc((len + 1) * sizeof(char));
    if (censored_word == NULL) {
        fprintf(stderr, "Memory allocation failed for string. Exiting program.\n");
-       exit(3);
+       exit(ABNORMAL_E);
    }
    // Change each character to a * 
    for (int i =0; i < len; i++){
@@ -38,7 +44,7 @@ char* to_lowercase(char* str){
     char* lowercase_str = (char*)malloc(len+1);
     if (lowercase_str == NULL){
       fprintf(stderr, "Memory allocation failed for string. Exiting program.\n");
-      exit(3);
+      exit(ABNORMAL_E);
     } 
     
     for (int i = 0; i < len; i++) {
@@ -56,7 +62,7 @@ char* to_uppercase(char* str){
   char* uppercase_str = (char*)malloc(len+1);
   if (uppercase_str == NULL) {
     fprintf(stderr, "Memory allocation failed for string. Exiting program.\n");
-    exit(3);
+    exit(ABNORMAL_E);
   }
 
   for (int i = 0; i < len; i++) {
@@ -88,7 +94,7 @@ bool is_encoded_substring(char* str, char* word){
 }
 
 // substring logic differs for each command (i.e mode)
-bool substring_found(int mode, char* str, char* word){
+bool substring_found(enum MODES mode, char* str, char* word){
   switch (mode){
     case 1:
           return strstr(str,word) != NULL;
@@ -121,7 +127,7 @@ char *redact_word(char *before, char *word, int *pt_swap_count){
   after = malloc((before_length + 1) * sizeof(char));
   if (after == NULL){
     fprintf(stderr, "Memory allocation failed for string. Exiting program.\n");
-    exit(3);
+    exit(ABNORMAL_E);
   }
 
   // i is index of before
@@ -163,7 +169,7 @@ char *redact_word_ignorecase(char *before, char *word, int *pt_swap_count){
   after = malloc((before_length + 1) * sizeof(char));
   if (after == NULL){
     fprintf(stderr, "Memory allocation failed for string. Exiting program.\n");
-    exit(3);
+    exit(ABNORMAL_E);
   }
   int i = 0;
 
@@ -202,7 +208,7 @@ char *decode_word_keep_case(char *before, char *word,  int *pt_swap_count){
   after = malloc((before_length + 1) * sizeof(char));
   if (after == NULL){
     fprintf(stderr, "Memory allocation failed for string. Exiting program.\n");
-    exit(3);
+    exit(ABNORMAL_E);
   }
   int i = 0;
   
@@ -248,7 +254,7 @@ char *decode_word_keep_case(char *before, char *word,  int *pt_swap_count){
   while (i < strlen(before)) {
     int prevInd = i-1;
     int afterInd = i+word_len; // index right after the word on that string
-    if (strstr(&before[i], censored_word) == &before[i] && ( (i == 0) || before[i-1] != '*') &&    before[i+ word_len] != '*') {
+    if (strstr(&before[i], censored_word) == &before[i] && ( (i == 0) || before[i-1] != '*') && before[i+ word_len] != '*') {
       // if prevInd is in bounds and the character is a letter
       if(prevInd >= 0 &&  prevInd <= (before_length -2 ) && isalpha(before[prevInd])){
         if(isupper(before[prevInd]) ){
@@ -259,7 +265,6 @@ char *decode_word_keep_case(char *before, char *word,  int *pt_swap_count){
       } 
          // if afterInd is in bounds and the character is a letter
       else if(afterInd >= 1 && (afterInd <=before_length-1 ) && isalpha(before[afterInd]) ){
-        
         if(isupper(before[i+word_len]) ){
           strcpy(&after[i], upper_word);
         }else{
@@ -267,9 +272,8 @@ char *decode_word_keep_case(char *before, char *word,  int *pt_swap_count){
         } 
       } 
         // if no before or after letter, then
-      else{
-        strcpy(&after[i], word);
-      }
+      else{  strcpy(&after[i], word);  }
+  
       i += word_len;
 
       if(pt_swap_count != NULL) *pt_swap_count +=1;
@@ -288,20 +292,20 @@ char *decode_word_keep_case(char *before, char *word,  int *pt_swap_count){
    return after;
  }
 // function processes and return the string according to the given mode
- char* process_string(int mode, char* curr_string, char* word, int* pt_swap_count){
+ char* process_string(enum MODES mode, char* curr_str, char* word, int* pt_swap_count){
   switch (mode){
     case 1:
-          return redact_word(curr_string,word, pt_swap_count);
+          return redact_word(curr_str,word, pt_swap_count);
           break;
     case 2:
-          return redact_word_ignorecase(curr_string,word, pt_swap_count);
+          return redact_word_ignorecase(curr_str,word, pt_swap_count);
           break;
     case 3: 
-          return decode_word_keep_case(curr_string,word, pt_swap_count);
+          return decode_word_keep_case(curr_str,word, pt_swap_count);
           break;
 
     case 4:
-          return decode_word_match_case(curr_string,word, pt_swap_count);
+          return decode_word_match_case(curr_str,word, pt_swap_count);
           break;
   }
   return NULL;
