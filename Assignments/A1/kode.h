@@ -1,12 +1,9 @@
 #pragma once
-#include <stdbool.h>
 #include "state.h"
-// #include "fileread.h"
-// #include "wreplace.h"
-// #include "ui.h"
+#include <stdbool.h>
 
-// void switch()
-enum MODES assign_mode(char* command);
-void verify_all_input(char* command, char* word, char* file_name, char* extra);
+enum MODES assign_mode(char *command);
 
-int start_program(enum MODES mode, char* word, char* file_name);
+void verify_all_input(char *command, char *word, char *file_name, char *extra);
+
+int start_program(enum MODES mode, char *word, FILE *ftpr);
