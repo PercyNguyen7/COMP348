@@ -94,10 +94,10 @@ bool is_encoded_substring(char *str, char *word) {
 // substring logic differs for each command (i.e mode)
 bool substring_found(enum MODES mode, char *str, char *word) {
   switch (mode) {
-  case 1:
+  case RC:
     return strstr(str, word) != NULL;
     break;
-  case 2:
+  case RI:
     char *lower_str = to_lowercase(str);
     char *lower_word = to_lowercase(word);
     char *res = strstr(lower_str, lower_word);
@@ -105,8 +105,8 @@ bool substring_found(enum MODES mode, char *str, char *word) {
     free(lower_word);
     return res != NULL;
     break;
-  case 3:
-  case 4:
+  case UK:
+  case UM:
     return is_encoded_substring(str, word);
     break;
   }
@@ -213,7 +213,6 @@ char *decode_word_keep_case(char *before, char *word, int *pt_swap_count) {
   int i = 0;
 
   while (i < strlen(before)) {
-
     if (strstr(&before[i], censored_word) == &before[i] &&
         ((i == 0) || before[i - 1] != '*') && before[i + word_len] != '*') {
 
@@ -227,7 +226,7 @@ char *decode_word_keep_case(char *before, char *word, int *pt_swap_count) {
       i++;
     }
   }
-  // put a null terminator at the end of the after string
+
   after[i] = '\0';
   free(censored_word);
   // return a pointer to the after string

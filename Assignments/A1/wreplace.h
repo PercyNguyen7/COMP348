@@ -5,7 +5,6 @@
 #include <stdbool.h>
 
 // helper functions
-//  int isNotAlphaNumeric(char c);
 void to_lowercase_in_place(char *str);
 char *to_lowercase(char *word);
 char *to_uppercase(char *word);

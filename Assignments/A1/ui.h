@@ -9,12 +9,3 @@ void display_welcome_msg(enum MODES mode);
 void display_summary(int total_swap_count, int total_line_changed,
                      enum EXIT_TYPE exit_type);
 void display_change_instruction(int line_no, char *curr_str, char *new_str);
-
-// total swap
-// total line
-// user res
-// fptr
-// curr str
-// word
-// line_no
-// all_selected
