@@ -107,6 +107,7 @@ int main() {
   // *ptr_num = 4;
   // printf("Num is %d", num);
   char *string = "Hey THere!";
-  printf("string[] is %s", &string[3]);
+  string[2] = 'u';
+  printf("string[] is %c", string[2]);
   return 0;
 }
