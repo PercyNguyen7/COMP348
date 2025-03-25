@@ -1,4 +1,5 @@
 #include "wreplace.h"
+
 #include <ctype.h> // for character type
 #include <stdbool.h>
 #include <stdio.h>
@@ -70,8 +71,9 @@ char *to_uppercase(char *str) {
   return uppercase_str;
 }
 
-// function checks if the censored version of word is a found in string
-bool is_encoded_substring(char *str, char *word) {
+// function checks if the censored version (****) of the word  is found in
+// string
+bool encoded_word_found(char *str, char *word) {
   char *censored_word = censorWord(word);
   char *temp = str;
   size_t len2 = strlen(censored_word);
@@ -80,6 +82,8 @@ bool is_encoded_substring(char *str, char *word) {
     // check if the substring from current position matches word
     if (strncmp(temp, censored_word, len2) == 0) {
       // ensure # of * is exact, no more and no less
+      // check if im at beginning of string, and if not is there a * in the char
+      // before temp
       if ((temp == str || *(temp - 1) != '*') && *(temp + len2) != '*') {
         free(censored_word);
         return true;
@@ -92,7 +96,7 @@ bool is_encoded_substring(char *str, char *word) {
 }
 
 // substring logic differs for each command (i.e mode)
-bool substring_found(enum MODES mode, char *str, char *word) {
+bool word_found(enum MODES mode, char *str, char *word) {
   switch (mode) {
   case RC:
     return strstr(str, word) != NULL;
@@ -107,7 +111,7 @@ bool substring_found(enum MODES mode, char *str, char *word) {
     break;
   case UK:
   case UM:
-    return is_encoded_substring(str, word);
+    return encoded_word_found(str, word);
     break;
   }
   return false;

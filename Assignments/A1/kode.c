@@ -10,10 +10,6 @@
 #include "wreplace.h"
 
 // kode.c contains functions to verify the command and the word input.
-// 0 - Changes made
-// 1 - Quit
-// 2 - No matches
-// 3 - Abnormal error (invalid command or word, FILE IO)
 int main(int argc, char *argv[]) {
   verify_all_input(argv[1], argv[2], argv[3], argv[4]);
 
@@ -46,7 +42,7 @@ int start_program(enum MODES mode, char *word, FILE *fptr) {
   // Looping through each line from the txt file
   while ((curr_str = read_line(fptr)) != NULL) {
     // IF the word/encoded word can be replaced!
-    if (substring_found(mode, curr_str, word)) {
+    if (word_found(mode, curr_str, word)) {
       int swap_count = 0;
       int *pt_swap_count = &swap_count;
       char *new_str = process_string(mode, curr_str, word, pt_swap_count);
@@ -56,7 +52,7 @@ int start_program(enum MODES mode, char *word, FILE *fptr) {
         display_change_instruction(line_no, curr_str, new_str);
         user_res = get_response();
       }
-      // HANDLE USER RESPONSE (state,)
+
       switch (user_res) {
       case YES:
         total_swap_count += swap_count;
@@ -80,6 +76,7 @@ int start_program(enum MODES mode, char *word, FILE *fptr) {
         free(curr_str);
         free(new_str);
         fclose(fptr);
+        printf("Quitting the program without further changes.");
         display_summary(total_swap_count, total_line_changed, QUIT_E);
         return QUIT_E;
       }
