@@ -1,4 +1,4 @@
-# Please run the program by the command line: python main.py <...path>
+# Please run the program by the command line: python3 main.py <...path>
 class Diagram:
     def __init__(self, filename, width, height):
         self.filename = filename
@@ -30,14 +30,15 @@ class Diagram:
 
     def __str__(self):
         diagram_att = f"""
-    DIAGRAM INFOS
+    DIAGRAM INFOS----------------------------------
     Name: {self.filename}
     Height: {self.height}
     Width: {self.width}
     Dimension: {self.dimension}
-    Object Truncated Count: {self.objects_truncated_count}
-    Object Difficult Count: {self.objects_difficult_count}
-    DIAGRAM OBJECTS INFOS
+    Objects Count: {self.objects_count}
+    Objects Truncated Count: {self.objects_truncated_count}
+    Objects Difficult Count: {self.objects_difficult_count}
+    DIAGRAM OBJECTS INFOS---------------------------
     """
         objs_info = "\n    ".join(str(obj) for obj in self.objects)
         return diagram_att + objs_info
@@ -70,7 +71,7 @@ class DiagramObject:
         return False
 
     def __str__(self):
-        return f"Object Type: {self.name}, BoundBox: {self.bndbox}, Width: {self._width}, Height: {self._height}, Area: {self._area}  Truncated: {self.truncated}, Difficult: {self.difficult}"
+        return f"Object Type: {self.name}, BoundBox: (xmin: {self.bndbox[0]},ymin: {self.bndbox[1]},xmax: {self.bndbox[2]},ymax: {self.bndbox[3]}), Width: {self._width}, Height: {self._height}, Area: {self._area}  Truncated: {self.truncated}, Difficult: {self.difficult}"
 
 # function that get all arguments via argument parser module and return it
 def get_args():
@@ -124,12 +125,16 @@ def list_diagrams(diagram_dict):
     if diagram_num == 0:
         print("0 diagram loaded. Please load a diagram first.")
     else:
-        print(f"{diagram_num} diagram(s) loaded: ")
-        for diagram in diagram_dict:
-            print(f"{diagram},")
+        all_diagram_name_str = ""
+        for i, key in enumerate(diagram_dict):
+            all_diagram_name_str += f"{key}"
+            if i != len(diagram_dict) - 1:
+                all_diagram_name_str += f", "
+        print(f"{diagram_num} diagram(s) loaded: {all_diagram_name_str}")
+
     print("\n----------------------------------------")
 
-#FEATURE 3: function checks if current directory contains xml files or not
+#FEATURE 3 HELPER: function checks if current directory contains xml files or not
 def dir_has_xml():
     xml_files = glob.glob("*.xml")
     if not xml_files:
@@ -137,10 +142,34 @@ def dir_has_xml():
     else:
         return True
 
+#FEATURE 3 HELPER: function checks if the input xml tags exist or not
+def xml_tags_valid(tag_tuple):
+    for tag in tag_tuple:
+        if tag is None:
+            return False
+    return True
+
+#FEATURE 3 HELPER: function updates the stats for the current diagram
+def update_stats_obj(stats_dict, new_obj):
+    stats_dict["all_obj_type_set"].add(new_obj.name)
+    stats_dict["total_obj"] += 1
+    if stats_dict["min_obj_area"] is None or new_obj.area < stats_dict["min_obj_area"]:
+        stats_dict["min_obj_area"] = new_obj.area
+    if stats_dict["max_obj_area"] is None or new_obj.area > stats_dict["max_obj_area"]:
+        stats_dict["max_obj_area"] = new_obj.area
+
+#FEATURE 3 HELPER: function updates the stats for the current diagram object
+def update_stats_diagram(stats_dict, new_diagram):
+    stats_dict["total_diagram"] += 1
+    if stats_dict["min_dia_dim"] is None or new_diagram.dimension < stats_dict["min_dia_dim"]:
+        stats_dict["min_dia_dim"] = new_diagram.dimension
+    if stats_dict["max_dia_dim"] is None or new_diagram.dimension > stats_dict["max_dia_dim"]:
+        stats_dict["max_dia_dim"] = new_diagram.dimension
+
 #FEATURE 3: function reads XML file, make new instances of diagrams and diagram objects within them, then update the diagram dictionary and stats_dict
 def load_file(diagram_dict,stats_dict):
     print("------------ 3. LOADING FILE ---------------\n")
-    if not dir_has_xml:
+    if not dir_has_xml():
         print("No XML files found in the current directory to be loaded.")
         print("\n----------------------------------------")
         return
@@ -148,60 +177,76 @@ def load_file(diagram_dict,stats_dict):
     try:
         input_filename = input("Enter the filename (w/o file extension) to load: ")
         tree = ET.parse(input_filename +".xml")
-        root = tree.getroot()
-        filename = input_filename
-        width = int(root.find('./size/width').text)
-        height = int(root.find('./size/height').text)
-        new_diagram = Diagram(filename,width,height)
+        root_tag = tree.getroot()
+        width_tag = root_tag.find('./size/width')
+        height_tag = root_tag.find('./size/height')
+        objects_tags = root_tag.findall('object')
+
+        # verify if all sub_tags are valid
+        if not xml_tags_valid((root_tag, width_tag, height_tag, objects_tags)):
+            print("Invalid XML. XML must have the following tags: root, width, height and object(s).")
+            print("\n----------------------------------------")
+            return
+        width = int(width_tag.text)
+        height = int(height_tag.text)
+        new_diagram = Diagram(input_filename,width,height)
 
         #PROCESSING OBJECTS
-        for obj in root.findall('object'):
-            obj_name = obj.find('name').text
+        for obj in objects_tags:
+            name_tag = obj.find('name')
+            truncated_tag = obj.find('truncated')
+            difficult_tag = obj.find('difficult')
+            xmin_tag = obj.find('./bndbox/xmin')
+            ymin_tag = obj.find('./bndbox/ymin')
+            xmax_tag = obj.find('./bndbox/xmax')
+            ymax_tag = obj.find('./bndbox/ymax')
 
-            truncated = int(obj.find('truncated').text)
+            #verify if all sub tags are valid, if not then we just dont add em
+            obj_sub_tags = (name_tag,truncated_tag,difficult_tag,xmin_tag,xmax_tag,ymin_tag,ymax_tag)
+            if not xml_tags_valid(obj_sub_tags):
+                print("Invalid XML. XML objects must have the following tags: name, truncated, difficult, xmin, xmax, ymin, ymax.")
+                print("\n----------------------------------------")
+                break
+
+            truncated = int(truncated_tag.text)
             if not truncated == 0:
                 new_diagram.objects_truncated_count += 1
-            difficult = int(obj.find('difficult').text)
+
+            difficult = int(difficult_tag.text)
             if not difficult == 0:
                 new_diagram.objects_difficult_count += 1
-            xmin = int(obj.find('./bndbox/xmin').text)
-            ymin = int(obj.find('./bndbox/ymin').text)
-            xmax = int(obj.find('./bndbox/xmax').text)
-            ymax = int(obj.find('./bndbox/ymax').text)
 
-            new_obj = DiagramObject(obj_name,truncated,difficult,xmin,ymin,xmax,ymax)
+            xmin = int(xmin_tag.text)
+            ymin = int(ymin_tag.text)
+            xmax = int(xmax_tag.text)
+            ymax = int(ymax_tag.text)
+
+            new_obj = DiagramObject(name_tag.text,truncated,difficult,xmin,ymin,xmax,ymax)
             new_diagram.add_obj(new_obj)
-            stats_dict["all_obj_type_set"].add(new_obj.name)
-            stats_dict["total_obj"] += 1
-            if stats_dict["min_obj_area"] is None or new_obj.area < stats_dict["min_obj_area"]:
-                stats_dict["min_obj_area"] = new_obj.area
-            if stats_dict["max_obj_area"] is None or new_obj.area > stats_dict["max_obj_area"]:
-                stats_dict["max_obj_area"] = new_obj.area
-        stats_dict["total_diagram"] += 1
-        if stats_dict["min_dia_dim"] is None or new_diagram.dimension < stats_dict["min_dia_dim"]:
-            stats_dict["min_dia_dim"] = new_diagram.dimension
-        if stats_dict["max_dia_dim"] is None or new_diagram.dimension > stats_dict["max_dia_dim"]:
-            stats_dict["max_dia_dim"] = new_diagram.dimension
-
+            update_stats_obj(stats_dict, new_obj)
+        update_stats_diagram(stats_dict, new_diagram)
         diagram_dict[input_filename] = new_diagram
         print(f"Loaded file {input_filename} successfully!")
         print("\n----------------------------------------")
-
     except FileNotFoundError:
         print(f"{input_filename}.xml file cannot be found. Load file failed.")
         print("\n----------------------------------------")
+    except ValueError:
+        print(f"One of the tag's value is not a valid integer.")
 
 #FEATURE 4: function prints all attributes of the diagram and its objects
 def display_diagram_info(diagram_dict):
     print("---------- 4.DISPLAY DIAGRAM INFO -------------\n")
     diagram_num = len(diagram_dict)
+    all_diagram_name_str = ""
     if diagram_num == 0:
         print("0 diagram loaded. Please load a diagram first.")
     else:
-        print(f"{diagram_num} diagram(s) loaded: ")
-        for diagram in diagram_dict:
-            print(f"{diagram},")
-
+        for i, key in enumerate(diagram_dict):
+            all_diagram_name_str += f"{key}"
+            if i != len(diagram_dict) - 1:
+                all_diagram_name_str += f", "
+        print(f"{diagram_num} diagram(s) loaded: {all_diagram_name_str}")
         input_filename = input("Insert your diagram name: ")
 
         if diagram_dict.get(input_filename) is not None:
@@ -240,7 +285,7 @@ def get_search_input_dimension(dim_type):
             case "maxw":
                 type_msg = "Max width (enter blank for zero)"
             case "maxh":
-                type_msg = "Max width (enter blank for max)"
+                type_msg = "Max height (enter blank for max)"
 
         input_dim = input(f"{type_msg} : ")
         if input_dim == "":
@@ -281,7 +326,7 @@ def get_search_input_visibility(visi_type):
 
 #FEATURE 5.2: function searches input_dimension, then prints the name of any diagram match all input for requirements
 def search_by_dimension(diagram_dict):
-    print("---------- 5.2 SEARCH BY DIMENSION -------------\n")
+    print("\n---------- 5.2 SEARCH BY DIMENSION -------------\n")
     input_minwidth = get_search_input_dimension("minw")
     input_maxwidth = get_search_input_dimension("maxw")
     input_minheight = get_search_input_dimension("minh")
@@ -289,23 +334,25 @@ def search_by_dimension(diagram_dict):
     input_difficult = get_search_input_visibility("difficult")
     input_truncated = get_search_input_visibility("truncated")
     diagrams_found = []
-    print(f"difficult: {input_difficult}")
-    print(f"truncated: {input_truncated}")
 
     # bndbox: xmin, ymin, maxw,ymax
     for key, diagram in diagram_dict.items():
-        correct_size =False
+        correct_size = False
         correct_difficult = False
         correct_truncated = False
-        for diagram_obj in diagram:
-            # check if the diagram's size fits within the specified range
+        for diagram_obj in diagram.objects:
+            # check if every diagram object's size fits within the specified range
             if input_minwidth <= diagram_obj.width <= input_maxwidth and input_minheight <= diagram_obj.height <= input_maxheight:
-               correct_size = True
-               break
+                correct_size = True
+            # if one object doesn't fit then we reject the diagram
+            else:
+                correct_size = False
+                break
+
         # check if truncation condition is met
         # if input is yes, it only searches for diagrams that contain only truncated objects
         # if input is no, it only searches for diagrams that does NOT contain any truncated objects
-        if (input_truncated == "yes" and diagram.objects_difficult_count == len(diagram.objects)) or \
+        if (input_truncated == "yes" and diagram.objects_truncated_count >= 1) or \
                 (input_truncated == "no" and diagram.objects_truncated_count == 0) or \
                 (input_truncated == "all"):
             correct_truncated = True
@@ -313,7 +360,7 @@ def search_by_dimension(diagram_dict):
         # check if difficulty condition is met
         # if input is yes, it only searches for diagrams that contain only difficult objects
         # if input is no, it only searches for diagrams that does NOT contain any difficult objects
-        if (input_difficult == "yes" and diagram.objects_truncated_count == len(diagram.objects)) or \
+        if (input_difficult == "yes" and diagram.objects_difficult_count >= 1) or \
                 (input_difficult == "no" and diagram.objects_difficult_count == 0) or \
                 (input_difficult == "all"):
             correct_difficult = True
@@ -323,11 +370,13 @@ def search_by_dimension(diagram_dict):
             diagrams_found.append(key)
 
     if len(diagrams_found) == 0:
-        print("No diagram match found.")
+        print("\nNo diagram match found.")
     else:
         msg = "Diagrams names that match your requirements: "
-        for diagram_name in diagrams_found:
-            msg += f"{diagram_name} ,"
+        for i, diagram_name in enumerate(diagrams_found):
+            msg += f"{diagram_name}"
+            if i != len(diagrams_found) -1:
+                msg += f", "
         print(msg)
     print("\n-------------------------------")
 
@@ -358,12 +407,14 @@ def search_diagram(diagram_dict):
 #FEATURE 6: display some statistics from the stats dictionary we created and have been updating since the beginning
 def display_stats(stats_dict):
     print("----------- 6.STATISTICS -------------\n")
-    total_obj_type_str = ""
+    total_obj_type_str = "" # string to display all object type
     if len(stats_dict["all_obj_type_set"]) == 0:
         total_obj_type_str = None
     else:
-        for obj_type in stats_dict["all_obj_type_set"]:
-            total_obj_type_str += f"{obj_type} ,"
+        for i, obj_type in enumerate(stats_dict["all_obj_type_set"]):
+            total_obj_type_str += f"{obj_type}"
+            if i != len(stats_dict["all_obj_type_set"]) - 1:
+                total_obj_type_str += f", "
     print(f"Number of loaded diagrams: {stats_dict["total_diagram"]} diagrams")
     print(f"Total number of total objects: {stats_dict["total_obj"]} objects")
     print(f"Diagram Object Types: {total_obj_type_str}")
