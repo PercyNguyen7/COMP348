@@ -1,4 +1,7 @@
 # Please run the program by the command line: python3 main.py <...path>
+from operator import truediv
+
+
 class Diagram:
     def __init__(self, filename, width, height):
         self.filename = filename
@@ -91,9 +94,9 @@ def display_menu():
     2. List Loaded Diagrams
     3. Load File
     4. Display Diagram Info
-    5. Search
-    5.1. Find by type
-    5.2. Find by dimension
+    5. Search Diagram
+        5.1. Find by object type
+        5.2. Find by diagram dimension
     6. Statistics
     7. Exit
 """)
@@ -127,7 +130,7 @@ def list_diagrams(diagram_dict):
     else:
         all_diagram_name_str = ""
         for i, key in enumerate(diagram_dict):
-            all_diagram_name_str += f"{key}"
+            all_diagram_name_str += f"'{key}'"
             if i != len(diagram_dict) - 1:
                 all_diagram_name_str += f", "
         print(f"{diagram_num} diagram(s) loaded: {all_diagram_name_str}")
@@ -175,7 +178,24 @@ def load_file(diagram_dict,stats_dict):
         return
     input_filename = ""
     try:
+        diagram_num = len(diagram_dict)
+        if diagram_num == 0:
+            print("0 diagram loaded.")
+        else:
+            all_diagram_name_str = ""
+            for i, key in enumerate(diagram_dict):
+                all_diagram_name_str += f"'{key}'"
+                if i != len(diagram_dict) - 1:
+                    all_diagram_name_str += f", "
+            print(f"{diagram_num} diagram(s) already loaded: {all_diagram_name_str}")
+
+
         input_filename = input("Enter the filename (w/o file extension) to load: ")
+        if input_filename in diagram_dict:
+            print("Diagram is already loaded and cannot be loaded again.")
+            print("\n----------------------------------------")
+            return
+
         tree = ET.parse(input_filename +".xml")
         root_tag = tree.getroot()
         width_tag = root_tag.find('./size/width')
@@ -226,7 +246,7 @@ def load_file(diagram_dict,stats_dict):
             update_stats_obj(stats_dict, new_obj)
         update_stats_diagram(stats_dict, new_diagram)
         diagram_dict[input_filename] = new_diagram
-        print(f"Loaded file {input_filename} successfully!")
+        print(f"Loaded file '{input_filename}' successfully!")
         print("\n----------------------------------------")
     except FileNotFoundError:
         print(f"{input_filename}.xml file cannot be found. Load file failed.")
@@ -243,7 +263,7 @@ def display_diagram_info(diagram_dict):
         print("0 diagram loaded. Please load a diagram first.")
     else:
         for i, key in enumerate(diagram_dict):
-            all_diagram_name_str += f"{key}"
+            all_diagram_name_str += f"'{key}'"
             if i != len(diagram_dict) - 1:
                 all_diagram_name_str += f", "
         print(f"{diagram_num} diagram(s) loaded: {all_diagram_name_str}")
@@ -340,14 +360,14 @@ def search_by_dimension(diagram_dict):
         correct_size = False
         correct_difficult = False
         correct_truncated = False
-        for diagram_obj in diagram.objects:
-            # check if every diagram object's size fits within the specified range
-            if input_minwidth <= diagram_obj.width <= input_maxwidth and input_minheight <= diagram_obj.height <= input_maxheight:
-                correct_size = True
-            # if one object doesn't fit then we reject the diagram
-            else:
-                correct_size = False
-                break
+
+        # check if every diagram object's size fits within the specified range
+        if input_minwidth <= diagram.width <= input_maxwidth and input_minheight <= diagram.height <= input_maxheight:
+            correct_size = True
+        # if one object doesn't fit then we reject the diagram
+        else:
+            correct_size = False
+            break
 
         # check if truncation condition is met
         # if input is yes, it only searches for diagrams that contain only truncated objects
@@ -373,8 +393,8 @@ def search_by_dimension(diagram_dict):
         print("\nNo diagram match found.")
     else:
         msg = "Diagrams names that match your requirements: "
-        for i, diagram_name in enumerate(diagrams_found):
-            msg += f"{diagram_name}"
+        for i, key in enumerate(diagrams_found):
+            msg += f"'{key}'"
             if i != len(diagrams_found) -1:
                 msg += f", "
         print(msg)
@@ -412,7 +432,7 @@ def display_stats(stats_dict):
         total_obj_type_str = None
     else:
         for i, obj_type in enumerate(stats_dict["all_obj_type_set"]):
-            total_obj_type_str += f"{obj_type}"
+            total_obj_type_str += f"'{obj_type}'"
             if i != len(stats_dict["all_obj_type_set"]) - 1:
                 total_obj_type_str += f", "
     print(f"Number of loaded diagrams: {stats_dict["total_diagram"]} diagrams")
@@ -423,6 +443,17 @@ def display_stats(stats_dict):
     print(f"Minimum Object Area is: {stats_dict["min_obj_area"]}")
     print(f"Maximum Object Area is: {stats_dict["max_obj_area"]}")
     print("\n--------------------------------------")
+
+# FEATURE 7 HELPER: function confirms user's wishes to quit
+def get_quit_confirmation():
+    while True:
+        res = input("Are you sure you want to quit? (yes,no) : ")
+        if res.lower() == "y" or res.lower() == "yes":
+            return True
+        elif res.lower() == "n" or res.lower() == 'no':
+            return False
+        else:
+            print("Invalid input. Please input a valid answer (yes,no) ")
 
 # function matches the response to the right feature. if res is 7, return 0 to exit the program
 def handle_res(res, diagram_dict, stats_dict):
@@ -440,7 +471,8 @@ def handle_res(res, diagram_dict, stats_dict):
         case 6:
             display_stats(stats_dict)
         case 7:
-            return 0
+            if get_quit_confirmation():
+                return 0
 
 #function starts the program in main with the input arguments provided
 def start_prog(args):
